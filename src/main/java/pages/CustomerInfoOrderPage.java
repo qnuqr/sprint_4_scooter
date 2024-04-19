@@ -18,6 +18,7 @@ public class CustomerInfoOrderPage {
     private By name = By.xpath("//input[@placeholder=\"* Имя\"]");
     private By surName = By.xpath("//input[@placeholder=\"* Фамилия\"]");
     private By adress = By.xpath("//input[@placeholder=\"* Адрес: куда привезти заказ\"]");
+    private By subwayInput = By.xpath("//input[@placholder = '* Станция метро']");
     private By metroStationList = By.xpath("//input[@class='select-search__input']");
     private By cherkizStation = By.xpath("//div[@class='select-search__select']");
     private By phoneNumber = By.xpath("//input[@placeholder='* Телефон: на него позвонит курьер']");
@@ -63,8 +64,9 @@ public class CustomerInfoOrderPage {
     }
 
     //метод выбора станции метро
-    public void setMetroStation() {
-        driver.findElement(metroStationList).sendKeys("Черкиз");
+    public void setMetroStation(String subwayName) {
+        //driver.findElement(metroStationList).sendKeys("Черкиз");
+        driver.findElement(metroStationList).sendKeys(subwayName);
         driver.findElement(cherkizStation).click();
     }
 
@@ -89,11 +91,11 @@ public class CustomerInfoOrderPage {
     }
 
     //метод заполнения данных арендатора и переход к след стр
-    public void setCustomerInfo(String name, String surname, String address, String phone) {
+    public void setCustomerInfo(String name, String surname, String address, String phone, String subwayname) {
         setName(name);
         setSurName(surname);
         setAdress(address);
-        setMetroStation();
+        setMetroStation(subwayname);
         setPhoneNumber(phone);
         clickAcceptCookieButton();
         clickContinueButton();

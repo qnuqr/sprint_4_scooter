@@ -3,10 +3,13 @@ package pages;
 
 import org.junit.Assert;
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
+
+import static org.apache.hc.core5.util.Timeout.ofSeconds;
 
 public class HomePage {
 
@@ -17,13 +20,13 @@ public class HomePage {
 
     private By subHeader = By.xpath("(//div[@class='Home_SubHeader__zwi_E'])[4]");
 
-    private By firstQuestion = By.xpath("//div[@id='accordion__heading-0']/parent::div");
-
-    private By answerQuestion = By.xpath("(//p)[1]/parent::div");
-
-    private By orderButton1 = By.className("Button_Button__ra12g");
+    private By orderButton1 = By.xpath("(//button[text()='Заказать'])[1]");
 
     private By orderButton2 = By.xpath("(//button[text()='Заказать'])[2]");
+    private By cookieButton = By.id("rcc-confirm-button");
+
+    private final String qusetionLocator = "accordion__heading-%s";
+    private final String answerLocator = "//div[contains(@id, 'accordion__panel')][.='%s']";
 
     // конструктор класса
     public HomePage(WebDriver driver) {
@@ -42,19 +45,6 @@ public class HomePage {
                 .until(ExpectedConditions.visibilityOfElementLocated(subHeader));
     }
 
-    //метод клика по первому вопросу
-    public void clickFirstQuestion() {
-        driver.findElement(firstQuestion).click();
-    }
-
-    //метод получения текста ответа на вопрос и сравнения результатов
-    public void getAnswerQuestion() {
-        new WebDriverWait(driver, 10)
-                .until(ExpectedConditions.visibilityOfElementLocated(answerQuestion));
-        WebElement answerText = driver.findElement(answerQuestion);
-        Assert.assertEquals("Ответ неправильный", "Сутки — 400 рублей. Оплата курьеру — наличными или картой.", answerText.getText());
-    }
-
     //метод клика 1-кнопки "Заказать"
     public void clickOrderButton1() {
         new WebDriverWait(driver, 10)
@@ -64,17 +54,26 @@ public class HomePage {
 
     //метод клика 2-кнопки "Заказать"
     public void clickOrderButton2() {
+        WebElement element = driver.findElement(orderButton2);
+        ((JavascriptExecutor)driver).executeScript("arguments[0].scrollIntoView();", element);
         new WebDriverWait(driver, 10)
                 .until(ExpectedConditions.elementToBeClickable(orderButton2));
         driver.findElement(orderButton2).click();
     }
 
-    //проверка раздела «Вопросы о важном».
-    public void checkQaSection() {
-        waitForHeader();
-        getSubHeaderText();
-        clickFirstQuestion();
-        getAnswerQuestion();
+    public void closeCookiesWindow() {
+        driver.findElement(cookieButton).click();
     }
 
+    public void expandQuestion(int index) {
+        WebElement element = driver.findElement(By.id(String.format(qusetionLocator, index)));
+        ((JavascriptExecutor)driver).executeScript("arguments[0].scrollIntoView();", element);
+        new WebDriverWait(driver, 15).until(ExpectedConditions.elementToBeClickable(element));
+        element.click();
+    }
+
+    public boolean answerIsDisplayed(String expectedAnswer) {
+        WebElement element = driver.findElement(By.xpath(String.format(answerLocator, expectedAnswer)));
+        return element.isDisplayed();
+    }
 }
