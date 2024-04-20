@@ -4,6 +4,8 @@ gittarget/
 !**/src/test/**/target/
 
 ### IntelliJ IDEA ###
+.idea
+target
 .idea/modules.xml
 .idea/jarRepositories.xml
 .idea/compiler.xml
